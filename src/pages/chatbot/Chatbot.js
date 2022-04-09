@@ -26,7 +26,7 @@ const config = {
 
 const Chatbot = () => {
     let [showChat,
-        setShowChat] = useState(false)
+        setShowChat] = useState(true)
 
     const startChat = () => {
         setShowChat(true)
@@ -45,37 +45,36 @@ const Chatbot = () => {
                         ? 'none'
                         : ''
                 }}>
-                    <ChatBot
-                        speechSynthesis={{
-                        enable: true,
-                        lang: 'en-US'
-                    }}
-                        recognitionEnable={true}
-                        steps={[
-                        {
-                            id: 'welcome',
-                            message: 'Hello! I am a weather bot. You can ask me anything. Go ahead!',
-                            trigger: 'wait_for_question'
-                        },
-                        {
-                            id: 'wait_for_question',
-                            user: true,
-                            trigger: 'response_bot'
-                        },
-                        {
-                            id: 'response_bot',
-                            component: <Brain user_input="${previousValue}"/>,
-                            asMessage: true,
-                            trigger: 'ask_for_more'
-                        },
-                        {
-                            id: 'ask_for_more',
-                            message: 'Is there anything else you want to know, just ask me.',
-                            delay: 3000,
-                            trigger: 'wait_for_question'
-                        },
-                    ]}
-                        {...config}/>
+                    {!showChat && <div>
+                        <ChatBot
+                            speechSynthesis={{
+                            enable: true,
+                            lang: 'en-US'
+                        }}
+                            recognitionEnable={true}
+                            steps={[
+                            {
+                                id: 'welcome',
+                                message: 'Hello! I am a weather bot. You can ask me anything. Go ahead!',
+                                trigger: 'wait_for_question'
+                            }, {
+                                id: 'wait_for_question',
+                                user: true,
+                                trigger: 'response_bot'
+                            }, {
+                                id: 'response_bot',
+                                component: <Brain user_input="${previousValue}"/>,
+                                asMessage: true,
+                                trigger: 'ask_for_more'
+                            }, {
+                                id: 'ask_for_more',
+                                message: 'Is there anything else you want to know, just ask me.',
+                                delay: 3000,
+                                trigger: 'wait_for_question'
+                            }
+                        ]}
+                            {...config}/>
+                    </div>}
                 </div>
                 <div>
                     {!showChat

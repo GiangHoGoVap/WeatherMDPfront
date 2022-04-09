@@ -91,8 +91,7 @@ const Main = () => {
                             data.main.humidity = response.data.humidity;
                             data.main.feels_like = response.data.temperature;
                             data.wind.speed = response.data.windSpeed;
-                            // console.log(data);
-                            showWeatherData(data);
+                            showWeatherData(data, "Ho Chi Minh City");
                             predictWeatherData2(data);
                         })
                         .catch((err) => {
@@ -108,8 +107,7 @@ const Main = () => {
                         .get(url)
                         .then((response) => {
                             let data = response.data;
-                            // console.log(response.data)
-                            showWeatherData(data);
+                            showWeatherData(data, data.name);
                             predictWeatherData2(data);
                         })
                     location = '';
@@ -131,7 +129,7 @@ const Main = () => {
                 })
         }
 
-        async function showWeatherData(data) {
+        async function showWeatherData(data, place) {
             let humidity = data.main.humidity;
             let pressure = data.main.pressure;
             let sunrise = data.sys.sunrise;
@@ -145,6 +143,7 @@ const Main = () => {
             timezone.innerHTML = data.name;
 
             var classify = await UserService.ensampleClassify(feels_like, wind_speed, pressure, humidity, visibility, clouds);
+            localStorage.setItem(place, JSON.stringify({"temp": data.main.feels_like, "humidity": data.main.humidity, "wind_speed": data.wind.speed, "classify": classify["Condition"]}));
 
             if (classify.Condition === 'Cloud') {
                 recommendEl.innerHTML = `
