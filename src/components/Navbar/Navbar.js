@@ -7,7 +7,6 @@ const Navbar = () => {
 			    <li><Link to='/main'>main</Link></li> 
 			    <li><Link to ='/about'>about</Link></li>
 			    <li><Link to ='/dashboard'>dashboard</Link></li>
-				<li><Link to ='/chatbot'>Chatbot</Link></li>
 		    </ul>
 	    </nav>
     );

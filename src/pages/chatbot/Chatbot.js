@@ -1,7 +1,7 @@
 import React, {useState} from 'react'
 import ChatBot from 'react-simple-chatbot'
 import {ThemeProvider} from 'styled-components'
-import Post from './Post'
+import Brain from './Brain'
 import './Chatbot.css'
 const theme = {
     background: '#f5f8fb',
@@ -24,7 +24,7 @@ const config = {
     headerTitle: 'Weather Chatbot'
 }
 
-const Chatbot = (props) => {
+const Chatbot = () => {
     let [showChat,
         setShowChat] = useState(false)
 
@@ -54,109 +54,26 @@ const Chatbot = (props) => {
                         steps={[
                         {
                             id: 'welcome',
-                            message: 'Hello!',
-                            trigger: 'q-firstname'
+                            message: 'Hello! I am a weather bot. You can ask me anything. Go ahead!',
+                            trigger: 'wait_for_question'
                         },
-                        /* Paste */
                         {
-                            id: 'q-firstname',
-                            message: 'What is your name?',
-                            trigger: 'firstname'
-                        }, {
-                            id: 'firstname',
+                            id: 'wait_for_question',
                             user: true,
-                            validator: (value) => {
-                                if (/^[A-Za-z]+$/.test(value)) {
-                                    return true
-                                } else {
-                                    return 'Please input alphabet characters only.'
-                                }
-                            },
-                            trigger: 'rmcbot'
-                        }, {
-                            id: 'rmcbot',
-                            message: 'Hi,{previousValue} I am RMC Bot! What can I do for you?',
-                            trigger: 'qtype'
-                        }, {
-                            id: 'qtype',
-                            options: [
-                                {
-                                    value: 1,
-                                    label: 'Property Tax ?',
-                                    trigger: '4'
-                                }, {
-                                    value: 2,
-                                    label: ' Professional Tax ?',
-                                    trigger: '3'
-                                }, {
-                                    value: 3,
-                                    label: 'Election Department',
-                                    trigger: '5'
-                                }, {
-                                    value: 4,
-                                    label: 'More Information',
-                                    trigger: '6'
-                                }
-                            ]
-                        }, {
-                            id: '3',
-                            message: 'Profession tax is the tax levied and collected by the state governments in India.',
-                            trigger: 'qtype'
-                        }, {
-                            id: '4',
-                            message: 'A property tax or millage rate is an ad valorem tax on the value of a property.',
-                            trigger: 'qtype'
-                        }, {
-                            id: '5',
-                            message: 'An election is a way people can choose their candidate or their preferences in a representative democracy or other form of government',
-                            trigger: 'qtype'
-                        }, {
-                            id: '6',
-                            trigger: 'q-submit'
-                        }, {
-                            id: 'q-submit',
-                            message: 'Do you have any other questions !?',
-                            trigger: 'submit'
-                        }, {
-                            id: 'submit',
-                            options: [
-                                {
-                                    value: 'y',
-                                    label: 'Yes',
-                                    trigger: 'no-submit'
-                                }, {
-                                    value: 'n',
-                                    label: 'No',
-                                    trigger: 'end-message'
-                                }
-                            ]
-                        }, {
-                            id: 'no-submit',
-                            options: [
-                                {
-                                    value: 1,
-                                    label: 'Property Tax ?',
-                                    trigger: '4'
-                                }, {
-                                    value: 2,
-                                    label: ' Professional Tax ?',
-                                    trigger: '3'
-                                }, {
-                                    value: 3,
-                                    label: 'Election Department',
-                                    trigger: '5'
-                                }, {
-                                    value: 4,
-                                    label: 'More Information',
-                                    trigger: '6'
-                                }
-                            ]
-                        }, {
-                            id: 'end-message',
-                            component: <Post/>,
+                            trigger: 'response_bot'
+                        },
+                        {
+                            id: 'response_bot',
+                            component: <Brain user_input="${previousValue}"/>,
                             asMessage: true,
-                            end: true
-                        }
+                            trigger: 'ask_for_more'
+                        },
+                        {
+                            id: 'ask_for_more',
+                            message: 'Is there anything else you want to know, just ask me.',
+                            delay: 3000,
+                            trigger: 'wait_for_question'
+                        },
                     ]}
                         {...config}/>
                 </div>
