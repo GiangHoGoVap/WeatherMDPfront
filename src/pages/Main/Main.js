@@ -403,7 +403,7 @@ const Main = () => {
                         <img
                             src="http://openweathermap.org/img/wn/10d@2x.png"
                             alt="weather icon"
-                            class="w-icon"/>
+                            className="w-icon"/>
                         <div className="other">
                             <div className="day">Monday</div>
                             <div className="temp">Night - 0&#176; C</div>
