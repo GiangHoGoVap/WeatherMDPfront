@@ -63,7 +63,7 @@ const Chatbot = () => {
                                 trigger: 'response_bot'
                             }, {
                                 id: 'response_bot',
-                                component: <Brain user_input="${previousValue}"/>,
+                                component: <Brain/>,
                                 asMessage: true,
                                 trigger: 'ask_for_more'
                             }, {

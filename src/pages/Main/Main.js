@@ -40,7 +40,8 @@ const Main = () => {
             'Dec'
         ];
 
-        const API_KEY = '49cc8c821cd2aff9af04c9f98c36eb74';
+        // const API_KEY = '49cc8c821cd2aff9af04c9f98c36eb74';
+        const API_KEY = process.env.REACT_APP_WEATHER_API_KEY;
 
         setInterval(() => {
             const time = new Date();
@@ -60,7 +61,7 @@ const Main = () => {
                 ? '0' + hoursIn12HrFormat
                 : hoursIn12HrFormat) + ':' + (minutes < 10
                 ? '0' + minutes
-                : minutes) + ' ' + `<span id="am-pm">${ampm}</span>`
+                : minutes) +` <span id="am-pm">${ampm}</span>`
             dateEl.innerHTML = days[day] + ', ' + date + ' ' + months[month]
 
         }, 1000);
@@ -76,7 +77,7 @@ const Main = () => {
                     let data = null;
                     location = "Ho Chi Minh";
                     text = "";
-                    const url = `https://api.openweathermap.org/data/2.5/weather?q=${location}&units=metric&appid=895284fb2d2c50a520ea537456963d9c`
+                    const url = `https://api.openweathermap.org/data/2.5/weather?q=${location}&units=metric&appid=${API_KEY}`
                     axios
                         .get(url)
                         .then((response) => {
@@ -102,7 +103,7 @@ const Main = () => {
                         .getElementById("input")
                         .value = "";
                 } else {
-                    const url = `https://api.openweathermap.org/data/2.5/weather?q=${location}&units=metric&appid=895284fb2d2c50a520ea537456963d9c`
+                    const url = `https://api.openweathermap.org/data/2.5/weather?q=${location}&units=metric&appid=${API_KEY}`
                     axios
                         .get(url)
                         .then((response) => {
