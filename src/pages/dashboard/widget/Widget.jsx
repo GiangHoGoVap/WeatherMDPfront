@@ -17,7 +17,7 @@ const Widget = ({ type,value}) => {
       data = {
         title: "Temperature",
         link: "Latest record",
-        value:temp,
+        value:temp +  ' c',
         icon: (
           <ThermostatIcon
             className="icon"
@@ -31,9 +31,9 @@ const Widget = ({ type,value}) => {
       break;
     case "humidity": 
       data = {
-        title: "Humidity",
+        title: "Humidity ",
         link: "Latest record",
-        value:humid,
+        value:humid +" %",
         icon: (
           <OpacityIcon
             className="icon"
@@ -49,7 +49,7 @@ const Widget = ({ type,value}) => {
       data = {
         title: "Wind Speed",
         link: "Latest record",
-        value:wind,
+        value: (wind* 3600 / 1000).toFixed(2) + ' km/h',
         icon: (
           <WindPowerIcon 
             className="icon"
