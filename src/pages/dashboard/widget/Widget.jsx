@@ -13,7 +13,7 @@ const Widget = ({ type,value}) => {
   let humid = value;
   let wind = value;
   switch (type) {
-    case "temperature (C)":
+    case "temperature":
       data = {
         title: "Temperature",
         link: "Latest record",
@@ -29,7 +29,7 @@ const Widget = ({ type,value}) => {
         ),
       };
       break;
-    case "humidity (%)": 
+    case "humidity": 
       data = {
         title: "Humidity",
         link: "Latest record",
@@ -45,7 +45,7 @@ const Widget = ({ type,value}) => {
         ),
       };
       break;
-    case "wind-speed (kph)":
+    case "wind-speed":
       data = {
         title: "Wind Speed",
         link: "Latest record",
