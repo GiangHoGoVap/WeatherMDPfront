@@ -25,19 +25,26 @@ const List = () => {
     let cur_min = today.getMinutes();
     UserService.getPredictNextHour().then((response)=>{
       for (let i = 0; i < 6; i++) {
-        if (cur_min < 30){
-          cur_min += 30;
+        // if (cur_min < 30){
+        //   cur_min += 30;
+        // }
+        // else{
+        //   cur_min = (cur_min + 30)%60;
+        //   if (cur_hour === 23){
+        //     cur_hour = 0;
+        //   }
+        //   else{
+        //     cur_hour +=1;
+        //   }
+        // }
+        if (cur_hour+1 <= 23){
+          cur_hour +=1;
         }
         else{
-          cur_min = (cur_min + 30)%60;
-          if (cur_hour === 23){
-            cur_hour = 0;
-          }
-          else{
-            cur_hour +=1;
-          }
+          cur_hour = 0;
         }
-        time_stamp[i] = cur_hour + ":" + cur_min;
+        time_stamp[i] = cur_hour + ":00" ;
+
         rows[i] = {
           id: time_stamp[i],
           temp: response.data[i].temperature + " C",

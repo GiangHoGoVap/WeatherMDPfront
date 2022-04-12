@@ -1,111 +1,153 @@
 import "./Main.css"
 import axios from 'axios'
 import UserService from '../../services/UserService';
-import React, {useEffect } from 'react';
+import React, {useEffect} from 'react';
 import Navbar from "../../components/Navbar/Navbar";
-
-
-const Main =() =>{
+import Chatbot from './../chatbot/Chatbot';
+const Main = () => {
     useEffect(() => {
-        
+
         const timeEl = document.getElementById('time');
-const dateEl = document.getElementById('date');
-const currentWeatherItemsEl = document.getElementById('current-weather-items');
-const timezone = document.getElementById('time-zone');
-const countryEl = document.getElementById('country');
-const coordinatesEl = document.getElementById('coordinates');
-const weatherForecastEl = document.getElementById('weather-forecast');
-const currentTempEl = document.getElementById('current-temp');
-const recommendEl = document.getElementById('recommend');
-const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
-const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        const dateEl = document.getElementById('date');
+        const currentWeatherItemsEl = document.getElementById('current-weather-items');
+        const timezone = document.getElementById('time-zone');
+        const countryEl = document.getElementById('country');
+        const coordinatesEl = document.getElementById('coordinates');
+        const weatherForecastEl = document.getElementById('weather-forecast');
+        const currentTempEl = document.getElementById('current-temp');
+        const recommendEl = document.getElementById('recommend');
+        const days = [
+            'Sunday',
+            'Monday',
+            'Tuesday',
+            'Wednesday',
+            'Thursday',
+            'Friday',
+            'Saturday'
+        ]
+        const months = [
+            'Jan',
+            'Feb',
+            'Mar',
+            'Apr',
+            'May',
+            'Jun',
+            'Jul',
+            'Aug',
+            'Sep',
+            'Oct',
+            'Nov',
+            'Dec'
+        ];
 
-const API_KEY ='49cc8c821cd2aff9af04c9f98c36eb74';
+        // const API_KEY = '49cc8c821cd2aff9af04c9f98c36eb74';
+        const API_KEY = process.env.REACT_APP_WEATHER_API_KEY;
 
-setInterval(() => {
-    const time = new Date();
-    const month = time.getMonth();
-    const date = time.getDate();
-    const day = time.getDay();
-    const hour = time.getHours();
-    const hoursIn12HrFormat = hour >= 13 ? hour %12: hour
-    const minutes = time.getMinutes();
-    const ampm = hour >=12 ? 'PM' : 'AM'
+        setInterval(() => {
+            const time = new Date();
+            const month = time.getMonth();
+            const date = time.getDate();
+            const day = time.getDay();
+            const hour = time.getHours();
+            const hoursIn12HrFormat = hour >= 13
+                ? hour % 12
+                : hour;
+            const minutes = time.getMinutes();
+            const ampm = hour >= 12
+                ? 'PM'
+                : 'AM';
 
-    timeEl.innerHTML = (hoursIn12HrFormat < 10? '0' + hoursIn12HrFormat : hoursIn12HrFormat) + ':' + (minutes < 10? '0' + minutes: minutes)+ ' ' + `<span id="am-pm">${ampm}</span>`
-    dateEl.innerHTML = days[day] + ', ' + date+ ' ' + months[month]
+            timeEl.innerHTML = (hoursIn12HrFormat < 10
+                ? '0' + hoursIn12HrFormat
+                : hoursIn12HrFormat) + ':' + (minutes < 10
+                ? '0' + minutes
+                : minutes) +` <span id="am-pm">${ampm}</span>`
+            dateEl.innerHTML = days[day] + ', ' + date + ' ' + months[month]
 
-}, 1000);
+        }, 1000);
 
-var input = document.getElementById("input");
-input.addEventListener("keydown", function (e) {
-    if (e.key === "Enter") {  
-        let location = document.getElementById("input").value;
-        let text = location.toLowerCase();
-        if (text === "ho chi minh" || text === "sai gon" || text ==="ho chi minh city"){
-            let data = null;
-            location = "Ho Chi Minh";
-            text = "";
-            const url = `https://api.openweathermap.org/data/2.5/weather?q=${location}&units=metric&appid=895284fb2d2c50a520ea537456963d9c`
-            axios.get(url).then((response) => {
-                data = response.data;
-                // console.log(response.data);
-            })
-           
-            UserService.getLatestRecord().then((response)=>{
-                // console.log(response);
-                data.main.humidity   = response.data.humidity;
-                data.main.feels_like = response.data.temperature;
-                data.wind.speed      = response.data.windSpeed;
-                // console.log(data);
-                showWeatherData(data);
-                predictWeatherData2(data);
-            }).catch((err)=>{
-                console.log(err);
-            });
-            location='';
-            document.getElementById("input").value="";
+        var input = document.getElementById("input");
+        input.addEventListener("keydown", function (e) {
+            if (e.key === "Enter") {
+                let location = document
+                    .getElementById("input")
+                    .value;
+                let text = location.toLowerCase();
+                if (text === "ho chi minh" || text === "sai gon" || text === "ho chi minh city") {
+                    let data = null;
+                    location = "Ho Chi Minh";
+                    text = "";
+                    const url = `https://api.openweathermap.org/data/2.5/weather?q=${location}&units=metric&appid=${API_KEY}`
+                    axios
+                        .get(url)
+                        .then((response) => {
+                            data = response.data;
+                            // console.log(response.data);
+                        })
+
+                    UserService
+                        .getLatestRecord()
+                        .then((response) => {
+                            // console.log(response);
+                            data.main.humidity = response.data.humidity;
+                            data.main.feels_like = response.data.temperature;
+                            data.wind.speed = response.data.windSpeed;
+                            showWeatherData(data, "Ho Chi Minh City");
+                            predictWeatherData2(data);
+                        })
+                        .catch((err) => {
+                            console.log(err);
+                        });
+                    location = '';
+                    document
+                        .getElementById("input")
+                        .value = "";
+                } else {
+                    const url = `https://api.openweathermap.org/data/2.5/weather?q=${location}&units=metric&appid=${API_KEY}`
+                    axios
+                        .get(url)
+                        .then((response) => {
+                            let data = response.data;
+                            showWeatherData(data, data.name);
+                            predictWeatherData2(data);
+                        })
+                    location = '';
+                    document
+                        .getElementById("input")
+                        .value = "";
+                }
+            }
+        });
+
+        function predictWeatherData2(obj) {
+            let latitude = obj.coord.lat;
+            let longitude = obj.coord.lon;
+            fetch(`https://api.openweathermap.org/data/2.5/onecall?lat=${latitude}&lon=${longitude}&exclude=hourly,minutely&units=metric&appid=${API_KEY}`)
+                .then(res => res.json())
+                .then(data => {
+                    // console.log("here: ",data);
+                    predictWeatherData(data);
+                })
         }
-        else{
-            const url = `https://api.openweathermap.org/data/2.5/weather?q=${location}&units=metric&appid=895284fb2d2c50a520ea537456963d9c`
-            axios.get(url).then((response) => {
-                let data=response.data;
-                // console.log(response.data)
-                showWeatherData(data);
-                predictWeatherData2(data);
-            })
-            location='';
-            document.getElementById("input").value="";
-        }
-    }
-});
 
-function predictWeatherData2 (obj) {
-        let latitude = obj.coord.lat;
-        let longitude = obj.coord.lon;
-        fetch(`https://api.openweathermap.org/data/2.5/onecall?lat=${latitude}&lon=${longitude}&exclude=hourly,minutely&units=metric&appid=${API_KEY}`).then(res => res.json()).then(data => {
-            // console.log("here: ",data);
-            predictWeatherData(data);
-        })
-}
+        async function showWeatherData(data, place) {
+            let humidity = data.main.humidity;
+            let pressure = data.main.pressure;
+            let sunrise = data.sys.sunrise;
+            let sunset = data.sys.sunset;
+            let wind_speed = data.wind.speed;
+            let feels_like = data.main.feels_like;
+            let visibility = data.visibility;
+            let clouds = data.clouds.all;
+            countryEl.innerHTML = data.sys.country;
+            coordinatesEl.innerHTML = data.coord.lat + 'N ' + data.coord.lon + 'E'
+            timezone.innerHTML = data.name;
 
-async function showWeatherData (data){
-    let humidity = data.main.humidity;
-    let pressure = data.main.pressure;
-    let sunrise = data.sys.sunrise;
-    let sunset = data.sys.sunset;
-    let wind_speed = data.wind.speed;
-    let feels_like = data.main.feels_like;
-    let visibility = data.visibility;
-    let clouds = data.clouds.all;
-    countryEl.innerHTML = data.sys.country;
-    coordinatesEl.innerHTML = data.coord.lat + 'N ' + data.coord.lon + 'E'
-    timezone.innerHTML = data.name;
-    
-    var classify = await UserService.ensampleClassify(feels_like,wind_speed,pressure,humidity,visibility,clouds);
+            var classify = await UserService.ensampleClassify(feels_like, wind_speed, pressure, humidity, visibility, clouds);
+            localStorage.setItem(place, JSON.stringify({"temp": data.main.feels_like, "humidity": data.main.humidity, "wind_speed": data.wind.speed, "classify": classify["Condition"]}));
 
-    if (classify.Condition === 'Cloud'){
-        recommendEl.innerHTML = `
+            if (classify.Condition === 'Cloud') {
+                recommendEl.innerHTML = `
         <div className="classify">
             <p>Classify</p>
             <svg xmlns="http://www.w3.org/2000/svg" width="27" height="27" fill="currentColor" class="bi bi-cloud-sun-fill" viewBox="0 0 16 16">
@@ -126,9 +168,8 @@ async function showWeatherData (data){
                 <path d="M4.5 1A1.5 1.5 0 0 0 3 2.5V3h4v-.5A1.5 1.5 0 0 0 5.5 1h-1zM7 4v1h2V4h4v.882a.5.5 0 0 0 .276.447l.895.447A1.5 1.5 0 0 1 15 7.118V13H9v-1.5a.5.5 0 0 1 .146-.354l.854-.853V9.5a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5v.793l.854.853A.5.5 0 0 1 7 11.5V13H1V7.118a1.5 1.5 0 0 1 .83-1.342l.894-.447A.5.5 0 0 0 3 4.882V4h4zM1 14v.5A1.5 1.5 0 0 0 2.5 16h3A1.5 1.5 0 0 0 7 14.5V14H1zm8 0v.5a1.5 1.5 0 0 0 1.5 1.5h3a1.5 1.5 0 0 0 1.5-1.5V14H9zm4-11H9v-.5A1.5 1.5 0 0 1 10.5 1h1A1.5 1.5 0 0 1 13 2.5V3z"/>
             </svg>
         </div>`;
-    }
-    else if (classify.Condition === 'Sunny'){
-        recommendEl.innerHTML = `
+            } else if (classify.Condition === 'Sunny') {
+                recommendEl.innerHTML = `
         <div className="classify">
             <p>Classify</p>
             <svg xmlns="http://www.w3.org/2000/svg" width="27" height="27" fill="currentColor" class="bi bi-sun-fill" viewBox="0 0 16 16">
@@ -147,9 +188,8 @@ async function showWeatherData (data){
                 <path d="M.5 1a.5.5 0 0 0 0 1h1.11l.401 1.607 1.498 7.985A.5.5 0 0 0 4 12h1a2 2 0 1 0 0 4 2 2 0 0 0 0-4h7a2 2 0 1 0 0 4 2 2 0 0 0 0-4h1a.5.5 0 0 0 .491-.408l1.5-8A.5.5 0 0 0 14.5 3H2.89l-.405-1.621A.5.5 0 0 0 2 1H.5zM6 14a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm7 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0zM6.5 7h4a.5.5 0 0 1 0 1h-4a.5.5 0 0 1 0-1z"/>
             </svg>
         </div>`;
-    }
-    else if (classify.Condition === 'Rainy'){
-        recommendEl.innerHTML = `
+            } else if (classify.Condition === 'Rainy') {
+                recommendEl.innerHTML = `
         <div className="classify">
             <p>Classify</p>
             <svg xmlns="http://www.w3.org/2000/svg" width="27" height="27" fill="currentColor" class="bi bi-cloud-lightning-rain-fill" viewBox="0 0 16 16">
@@ -169,9 +209,8 @@ async function showWeatherData (data){
                 <path fillRule="evenodd" d="M7.293 1.5a1 1 0 0 1 1.414 0l6.647 6.646a.5.5 0 0 1-.708.708L8 2.207 1.354 8.854a.5.5 0 1 1-.708-.708L7.293 1.5z"/>
             </svg>
         </div>`;
-    }
-    else if (classify.Condition === 'Clear'){
-        recommendEl.innerHTML = `
+            } else if (classify.Condition === 'Clear') {
+                recommendEl.innerHTML = `
         <div className="classify">
             <p>Classify</p>
             <svg xmlns="http://www.w3.org/2000/svg" width="27" height="27" fill="currentColor" class="bi bi-sun" viewBox="0 0 16 16">
@@ -193,17 +232,15 @@ async function showWeatherData (data){
                 <path d="M4 4.5a.5.5 0 0 1 .5-.5H6a.5.5 0 0 1 0 1v.5h4.14l.386-1.158A.5.5 0 0 1 11 4h1a.5.5 0 0 1 0 1h-.64l-.311.935.807 1.29a3 3 0 1 1-.848.53l-.508-.812-2.076 3.322A.5.5 0 0 1 8 10.5H5.959a3 3 0 1 1-1.815-3.274L5 5.856V5h-.5a.5.5 0 0 1-.5-.5zm1.5 2.443-.508.814c.5.444.85 1.054.967 1.743h1.139L5.5 6.943zM8 9.057 9.598 6.5H6.402L8 9.057zM4.937 9.5a1.997 1.997 0 0 0-.487-.877l-.548.877h1.035zM3.603 8.092A2 2 0 1 0 4.937 10.5H3a.5.5 0 0 1-.424-.765l1.027-1.643zm7.947.53a2 2 0 1 0 .848-.53l1.026 1.643a.5.5 0 1 1-.848.53L11.55 8.623z"/>
             </svg>
         </div>`;
-    }
+            }
 
-
-    currentWeatherItemsEl.innerHTML = 
-    `<div class="weather-item">
+            currentWeatherItemsEl.innerHTML = `<div class="weather-item">
         <div>Feelslike</div>
         <div>${feels_like} &#176;C</div>
     </div>
     <div class="weather-item">
         <div>Wind Speed</div>
-        <div>${(wind_speed*3600/1000).toFixed(2)} kph</div>
+        <div>${ (wind_speed * 3600 / 1000).toFixed(2)} kph</div>
     </div>
     <div class="weather-item">
         <div>Pressure</div>
@@ -215,7 +252,7 @@ async function showWeatherData (data){
     </div>
     <div class="weather-item">
         <div>Visibility</div>
-        <div>${visibility/1000} km</div>
+        <div>${visibility / 1000} km</div>
     </div>
     <div class="weather-item">
         <div>Clouds</div>
@@ -225,152 +262,223 @@ async function showWeatherData (data){
 
     <div class="weather-item">
         <div>Sunrise</div>
-        <div>${window.moment(sunrise * 1000).format('HH:mm a')}</div>
+        <div>${window
+                .moment(sunrise * 1000)
+                .format('HH:mm a')}</div>
     </div>
     <div class="weather-item">
         <div>Sunset</div>
-        <div>${window.moment(sunset*1000).format('HH:mm a')}</div>
+        <div>${window
+                .moment(sunset * 1000)
+                .format('HH:mm a')}</div>
     </div>
     
     `;
-}
-
-function predictWeatherData(data){
-    let otherDayForcast = ''
-    data.daily.forEach((day, idx) => {
-        if(idx === 0){
-            currentTempEl.innerHTML = `
-            <img src="http://openweathermap.org/img/wn//${day.weather[0].icon}@4x.png" alt="weather icon" class="w-icon">
-            <div class="other">
-                <div class="day">${window.moment(day.dt*1000).format('dddd')}</div>
-                <div class="temp">Night - ${day.temp.night}&#176;C</div>
-                <div class="temp">Day - ${day.temp.day}&#176;C</div>
-            </div>
-            
-            `
-        }else{
-            otherDayForcast += `
-            <div class="weather-forecast-item">
-                <div class="day">${window.moment(day.dt*1000).format('ddd')}</div>
-                <img src="http://openweathermap.org/img/wn/${day.weather[0].icon}@2x.png" alt="weather icon" class="w-icon">
-                <div class="temp">Night - ${day.temp.night}&#176;C</div>
-                <div class="temp">Day - ${day.temp.day}&#176;C</div>
-            </div>
-            
-            `
         }
-    })
-    weatherForecastEl.innerHTML = otherDayForcast;
-}
 
-      },[]);
-        return (
-    
-    <div className = "main">
-        <Navbar/>
-        <div className="container">
-            <div className="current-info">
-                <div className="date-container">
-                    <div className="time" id="time">
-                        00:00 <span id="am-pm">AM</span>
-                    </div>
-                    <div className="date" id="date">
-                        Monday, 25 March
-                    </div>
-                
-                    <div className="others" id="current-weather-items">
-                        <p>Welcome to MDP weather forecast. </p>
-                        <p>Search a location to explore our product!</p>
+        function predictWeatherData(data) {
+            let otherDayForcast = ''
+            data
+                .daily
+                .forEach((day, idx) => {
+                    if (idx === 0) {
+                        currentTempEl.innerHTML = `
+            <img src="http://openweathermap.org/img/wn//${day
+                            .weather[0]
+                            .icon}@4x.png" alt="weather icon" class="w-icon">
+            <div class="other">
+                <div class="day">${window
+                            .moment(day.dt * 1000)
+                            .format('dddd')}</div>
+                <div class="temp">Night - ${day
+                            .temp
+                            .night}&#176;C</div>
+                <div class="temp">Day - ${day
+                            .temp
+                            .day}&#176;C</div>
+            </div>
+            
+            `
+                    } else {
+                        otherDayForcast += `
+            <div class="weather-forecast-item">
+                <div class="day">${window
+                            .moment(day.dt * 1000)
+                            .format('ddd')}</div>
+                <img src="http://openweathermap.org/img/wn/${day
+                            .weather[0]
+                            .icon}@2x.png" alt="weather icon" class="w-icon">
+                <div class="temp">Night - ${day
+                            .temp
+                            .night}&#176;C</div>
+                <div class="temp">Day - ${day
+                            .temp
+                            .day}&#176;C</div>
+            </div>
+            
+            `
+                    }
+                })
+            weatherForecastEl.innerHTML = otherDayForcast;
+        }
+
+    }, []);
+    return (
+        <div>
+            <div className="main">
+                <Navbar/>
+                <div className="container">
+                    <div className="current-info">
+                        <div className="date-container">
+                            <div className="time" id="time">
+                                00:00
+                                <span id="am-pm">AM</span>
+                            </div>
+                            <div className="date" id="date">
+                                Monday, 25 March
+                            </div>
+
+                            <div className="others" id="current-weather-items">
+                                <p>Welcome to MDP weather forecast.
+                                </p>
+                                <p>Search a location to explore our product!</p>
+                            </div>
+                        </div>
+
+                        <div className="place-container">
+                            <div className="time-zone" id="time-zone">Asia/VungTau</div>
+                            <div id="coordinates" className="coordinates"></div>
+                            <div id="country" className="country">VN</div>
+                            <div className="search" id="search">
+                                <input id='input' placeholder='Input a location' type="text"/>
+                            </div>
+                        </div>
+                        <div className="recommend" id="recommend">
+                            <div className="classify">
+                                <p>Try out</p>
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="16"
+                                    height="16"
+                                    fill="currentColor"
+                                    className="bi bi-hand-thumbs-up-fill"
+                                    viewBox="0 0 16 16">
+                                    <path
+                                        d="M6.956 1.745C7.021.81 7.908.087 8.864.325l.261.066c.463.116.874.456 1.012.965.22.816.533 2.511.062 4.51a9.84 9.84 0 0 1 .443-.051c.713-.065 1.669-.072 2.516.21.518.173.994.681 1.2 1.273.184.532.16 1.162-.234 1.733.058.119.103.242.138.363.077.27.113.567.113.856 0 .289-.036.586-.113.856-.039.135-.09.273-.16.404.169.387.107.819-.003 1.148a3.163 3.163 0 0 1-.488.901c.054.152.076.312.076.465 0 .305-.089.625-.253.912C13.1 15.522 12.437 16 11.5 16H8c-.605 0-1.07-.081-1.466-.218a4.82 4.82 0 0 1-.97-.484l-.048-.03c-.504-.307-.999-.609-2.068-.722C2.682 14.464 2 13.846 2 13V9c0-.85.685-1.432 1.357-1.615.849-.232 1.574-.787 2.132-1.41.56-.627.914-1.28 1.039-1.639.199-.575.356-1.539.428-2.59z"/>
+                                </svg>
+                            </div>
+                            <div className="object">
+                                <p>Good luck</p>
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="22"
+                                    height="22"
+                                    fill="currentColor"
+                                    className="bi bi-arrow-through-heart"
+                                    viewBox="0 0 16 16">
+                                    <path
+                                        fillRule="evenodd"
+                                        d="M2.854 15.854A.5.5 0 0 1 2 15.5V14H.5a.5.5 0 0 1-.354-.854l1.5-1.5A.5.5 0 0 1 2 11.5h1.793l.53-.53c-.771-.802-1.328-1.58-1.704-2.32-.798-1.575-.775-2.996-.213-4.092C3.426 2.565 6.18 1.809 8 3.233c1.25-.98 2.944-.928 4.212-.152L13.292 2 12.147.854A.5.5 0 0 1 12.5 0h3a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-.854.354L14 2.707l-1.006 1.006c.236.248.44.531.6.845.562 1.096.585 2.517-.213 4.092-.793 1.563-2.395 3.288-5.105 5.08L8 13.912l-.276-.182a21.86 21.86 0 0 1-2.685-2.062l-.539.54V14a.5.5 0 0 1-.146.354l-1.5 1.5Zm2.893-4.894A20.419 20.419 0 0 0 8 12.71c2.456-1.666 3.827-3.207 4.489-4.512.679-1.34.607-2.42.215-3.185-.817-1.595-3.087-2.054-4.346-.761L8 4.62l-.358-.368c-1.259-1.293-3.53-.834-4.346.761-.392.766-.464 1.845.215 3.185.323.636.815 1.33 1.519 2.065l1.866-1.867a.5.5 0 1 1 .708.708L5.747 10.96Z"/>
+                                </svg>
+                            </div>
+                            <div className="Further">
+                                <p>Explore</p>
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="22"
+                                    height="22"
+                                    fill="currentColor"
+                                    className="bi bi-arrow-up-right"
+                                    viewBox="0 0 16 16">
+                                    <path
+                                        fillRule="evenodd"
+                                        d="M14 2.5a.5.5 0 0 0-.5-.5h-6a.5.5 0 0 0 0 1h4.793L2.146 13.146a.5.5 0 0 0 .708.708L13 3.707V8.5a.5.5 0 0 0 1 0v-6z"/>
+                                </svg>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <div className="place-container">
-                    <div className="time-zone" id="time-zone">Asia/VungTau</div>
-                    <div id="coordinates" className="coordinates"></div>
-                    <div id="country" className="country">VN</div>
-                    <div className="search" id="search">
-                        <input 
-                            id ='input'
-                            placeholder='Input a location'
-                            type="text" />
+                <div className="future-forecast">
+                    <div className="today" id="current-temp">
+                        <img
+                            src="http://openweathermap.org/img/wn/10d@2x.png"
+                            alt="weather icon"
+                            className="w-icon"/>
+                        <div className="other">
+                            <div className="day">Monday</div>
+                            <div className="temp">Night - 0&#176; C</div>
+                            <div className="temp">Day - 0&#176; C</div>
+                        </div>
+                    </div>
+
+                    <div className="weather-forecast" id="weather-forecast">
+                        <div className="weather-forecast-item">
+                            <div className="day">Tue</div>
+                            <img
+                                src="http://openweathermap.org/img/wn/10d@2x.png"
+                                alt="weather icon"
+                                className="w-icon"/>
+                            <div className="temp">Night - 0&#176; C</div>
+                            <div className="temp">Day - 0&#176; C</div>
+                        </div>
+                        <div className="weather-forecast-item">
+                            <div className="day">Wed</div>
+                            <img
+                                src="http://openweathermap.org/img/wn/10d@2x.png"
+                                alt="weather icon"
+                                className="w-icon"/>
+                            <div className="temp">Night - 0&#176; C</div>
+                            <div className="temp">Day - 0&#176; C</div>
+                        </div>
+                        <div className="weather-forecast-item">
+                            <div className="day">Thur</div>
+                            <img
+                                src="http://openweathermap.org/img/wn/10d@2x.png"
+                                alt="weather icon"
+                                className="w-icon"/>
+                            <div className="temp">Night - 0&#176; C</div>
+                            <div className="temp">Day - 0&#176; C</div>
+                        </div>
+                        <div className="weather-forecast-item">
+                            <div className="day">Fri</div>
+                            <img
+                                src="http://openweathermap.org/img/wn/10d@2x.png"
+                                alt="weather icon"
+                                className="w-icon"/>
+                            <div className="temp">Night - 0&#176; C</div>
+                            <div className="temp">Day - 0&#176; C</div>
+                        </div>
+                        <div className="weather-forecast-item">
+                            <div className="day">Sat</div>
+                            <img
+                                src="http://openweathermap.org/img/wn/10d@2x.png"
+                                alt="weather icon"
+                                className="w-icon"/>
+                            <div className="temp">Night - 0&#176; C</div>
+                            <div className="temp">Day - 0&#176; C</div>
+                        </div>
+                        <div className="weather-forecast-item">
+                            <div className="day">Sun</div>
+                            <img
+                                src="http://openweathermap.org/img/wn/10d@2x.png"
+                                alt="weather icon"
+                                className="w-icon"/>
+                            <div className="temp">Night - 0&#176; C</div>
+                            <div className="temp">Day - 0&#176; C</div>
+                        </div>
                     </div>
                 </div>
-                <div className="recommend" id="recommend" >
-                    <div className="classify">
-                        <p>Try out</p>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-hand-thumbs-up-fill" viewBox="0 0 16 16">
-                            <path d="M6.956 1.745C7.021.81 7.908.087 8.864.325l.261.066c.463.116.874.456 1.012.965.22.816.533 2.511.062 4.51a9.84 9.84 0 0 1 .443-.051c.713-.065 1.669-.072 2.516.21.518.173.994.681 1.2 1.273.184.532.16 1.162-.234 1.733.058.119.103.242.138.363.077.27.113.567.113.856 0 .289-.036.586-.113.856-.039.135-.09.273-.16.404.169.387.107.819-.003 1.148a3.163 3.163 0 0 1-.488.901c.054.152.076.312.076.465 0 .305-.089.625-.253.912C13.1 15.522 12.437 16 11.5 16H8c-.605 0-1.07-.081-1.466-.218a4.82 4.82 0 0 1-.97-.484l-.048-.03c-.504-.307-.999-.609-2.068-.722C2.682 14.464 2 13.846 2 13V9c0-.85.685-1.432 1.357-1.615.849-.232 1.574-.787 2.132-1.41.56-.627.914-1.28 1.039-1.639.199-.575.356-1.539.428-2.59z"/>
-                        </svg>
-                    </div>
-                    <div className="object">
-                        <p>Good luck</p>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" className="bi bi-arrow-through-heart" viewBox="0 0 16 16">
-                            <path fillRule="evenodd" d="M2.854 15.854A.5.5 0 0 1 2 15.5V14H.5a.5.5 0 0 1-.354-.854l1.5-1.5A.5.5 0 0 1 2 11.5h1.793l.53-.53c-.771-.802-1.328-1.58-1.704-2.32-.798-1.575-.775-2.996-.213-4.092C3.426 2.565 6.18 1.809 8 3.233c1.25-.98 2.944-.928 4.212-.152L13.292 2 12.147.854A.5.5 0 0 1 12.5 0h3a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-.854.354L14 2.707l-1.006 1.006c.236.248.44.531.6.845.562 1.096.585 2.517-.213 4.092-.793 1.563-2.395 3.288-5.105 5.08L8 13.912l-.276-.182a21.86 21.86 0 0 1-2.685-2.062l-.539.54V14a.5.5 0 0 1-.146.354l-1.5 1.5Zm2.893-4.894A20.419 20.419 0 0 0 8 12.71c2.456-1.666 3.827-3.207 4.489-4.512.679-1.34.607-2.42.215-3.185-.817-1.595-3.087-2.054-4.346-.761L8 4.62l-.358-.368c-1.259-1.293-3.53-.834-4.346.761-.392.766-.464 1.845.215 3.185.323.636.815 1.33 1.519 2.065l1.866-1.867a.5.5 0 1 1 .708.708L5.747 10.96Z"/>
-                        </svg>
-                    </div>  
-                    <div className="Further">
-                        <p>Explore</p>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" className="bi bi-arrow-up-right" viewBox="0 0 16 16">
-                            <path fillRule="evenodd" d="M14 2.5a.5.5 0 0 0-.5-.5h-6a.5.5 0 0 0 0 1h4.793L2.146 13.146a.5.5 0 0 0 .708.708L13 3.707V8.5a.5.5 0 0 0 1 0v-6z"/>
-                        </svg>
-                    </div>
-                </div>
+
+                <Chatbot/>
+
+                <script
+                    src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"
+                    integrity="sha512-qTXRIMyZIFb8iQcfjXWCO8+M5Tbc38Qi5WzdPOYZHIlZpzBHG3L3by84BBBOiRGiEb7KKtAOAs5qYdUiZiQNNQ=="
+                    crossOrigin="anonymous"
+                    referrerPolicy="no-referrer"></script>
             </div>
         </div>
-
-        <div className="future-forecast">
-            <div className="today" id="current-temp">
-                <img src="http://openweathermap.org/img/wn/10d@2x.png" alt="weather icon" class="w-icon"/>
-                <div className="other">
-                    <div className="day">Monday</div>
-                    <div className="temp">Night - 0&#176; C</div>
-                    <div className="temp">Day - 0&#176; C</div>
-                </div>
-            </div>
-
-            <div className="weather-forecast" id="weather-forecast">
-                <div className="weather-forecast-item">
-                    <div className="day">Tue</div>
-                    <img src="http://openweathermap.org/img/wn/10d@2x.png" alt="weather icon" className="w-icon"/>
-                    <div className="temp">Night - 0&#176; C</div>
-                    <div className="temp">Day - 0&#176; C</div>
-                </div>
-                <div className="weather-forecast-item">
-                    <div className="day">Wed</div>
-                    <img src="http://openweathermap.org/img/wn/10d@2x.png" alt="weather icon" className="w-icon"/>
-                    <div className="temp">Night - 0&#176; C</div>
-                    <div className="temp">Day - 0&#176; C</div>
-                </div>
-                <div className="weather-forecast-item">
-                    <div className="day">Thur</div>
-                    <img src="http://openweathermap.org/img/wn/10d@2x.png" alt="weather icon" className="w-icon"/>
-                    <div className="temp">Night - 0&#176; C</div>
-                    <div className="temp">Day - 0&#176; C</div>
-                </div>
-                <div className="weather-forecast-item">
-                    <div className="day">Fri</div>
-                    <img src="http://openweathermap.org/img/wn/10d@2x.png" alt="weather icon" className="w-icon"/>
-                    <div className="temp">Night - 0&#176; C</div>
-                    <div className="temp">Day - 0&#176; C</div>
-                </div>
-                <div className="weather-forecast-item">
-                    <div className="day">Sat</div>
-                    <img src="http://openweathermap.org/img/wn/10d@2x.png" alt="weather icon" className="w-icon"/>
-                    <div className="temp">Night - 0&#176; C</div>
-                    <div className="temp">Day - 0&#176; C</div>
-                </div>
-                <div className="weather-forecast-item">
-                    <div className="day">Sun</div>
-                    <img src="http://openweathermap.org/img/wn/10d@2x.png" alt="weather icon" className="w-icon"/>
-                    <div className="temp">Night - 0&#176; C</div>
-                    <div className="temp">Day - 0&#176; C</div>
-                </div>
-            </div>
-        </div>
-
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js" integrity="sha512-qTXRIMyZIFb8iQcfjXWCO8+M5Tbc38Qi5WzdPOYZHIlZpzBHG3L3by84BBBOiRGiEb7KKtAOAs5qYdUiZiQNNQ==" crossOrigin="anonymous" referrerPolicy="no-referrer"></script>
-    </div>
-        );
-    
+    );
 };
 export default Main;
