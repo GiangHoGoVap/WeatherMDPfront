@@ -57,6 +57,10 @@
   .About .button:hover {
     background-color: #555;
   }
+
+  h2 {
+    font-size: 23px;
+  }
   
  @media screen and (max-width: 650px) {
     .column {
